@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset='UTF-8'>
+        <title>title</title>
+    </head>
+    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+    {% load static  %}
+<link rel="stylesheet" href="{% static  'markdown.css' %}" >
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+<!-- <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script> -->
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.3/jquery.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<style>
+
+.container {
+        background-color:#F0FFF0;
+        margin-top: 20px;
+        /* padding-left: 500px;
+        padding-right: 500px; */
+    }
+img {
+    height: 30px;
+    width: 30px;
+}
+
+/* 代码块 */
+
+#chat {
+    height: 80vh;
+    background-color: #f8f8f8;
+    border: 1px solid #ccc;
+    font-size:large;
+    padding: 10px;
+    overflow: auto;
+}
+
+pre {
+    background-color: #101010;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    font-size:large;
+    line-height: 1.45;
+    overflow: auto;
+    padding: 1em;
+    color: rgb(99, 180, 29);
+}
+
+code {
+    font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    background-color:hsl(0, 0%, 4%);
+    color:#007f31;
+}
+
+
+
+</style>
+
+
+<body >
+<div class="container">
+    <h1>ChatGPT 免费体验  </h1>
+    <strong>声明：</strong> 本站仅用于学习或技术交流 
+    <div   id="chat">
+    <br>
+    <img src="{% static 'image/ai.png'  %}"> 你有什么想问我的么？
+    </div>
+    <br>
+
+    {% csrf_token %} 
+
+    <div class="input-group" >
+        <span class="input-group-addon" id="basic-addon1">问题:</span>
+        <input type="text" class="form-control" placeholder="question"  style="height: 40px; font-size: 16px;" aria-describedby="basic-addon1" id="opt">
+    </div><br>
+    <button class="btn btn-info" id="submit" value="确定" >确定</button>
+    <br><br><br><br><br><br><br>
+		
+</div>
+
+</body>
+<script>
+   $("body").keydown(function() {
+    if (event.keyCode == "13") {//keyCode=13是回车键
+        $('#submit').click();
+    }
+});
+
+    $("#submit").click(function(){
+        data=$("#opt").val();
+        if(data.length==0){
+            return
+        }
+        data="<hr><span class=\"pull-right\">"+$("#opt").val()+" <img src=\"{% static 'image/me.jpg' %}\"> </span>";
+        $("#chat").append(data);
+        data="<br><br><img src=\"{% static 'image/ai.png'  %}\">  正则思考中，稍等10秒...";
+        $("#chat").append(data)	
+	var element = document.getElementById("chat");
+        element.scrollTop = element.scrollHeight;	
+        $.ajax({
+            url:"/index/",
+            type:"post",
+            data:{
+                "opt":$("#opt").val(),
+                "csrfmiddlewaretoken":"{{ csrf_token }}",
+            },
+            success:function(data){
+                if( data != "none") {
+                    $("#chat").append("<br>&nbsp;&nbsp;"+data)
+		    var element = document.getElementById("chat");
+                    element.scrollTop = element.scrollHeight;	
+		    document.getElementById("opt").value="";
+                };
+                
+            },
+        });
+
+    });
+
+</script>
+
+
+</html>
+
+
+
